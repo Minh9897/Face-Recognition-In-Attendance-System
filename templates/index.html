@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/styles3.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="menu">
+        <ul>
+            <li><a href="/">Video Processing</a></li>
+            <li><a href="/training">Training Model</a></li>
+            <li><a class="active" href="/index">Database</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div id="show_table"></div>
+        <form action="" id="my_form" method="post">
+            <label for="date">Choose 5 recent files:</label>
+            <select name="date2" id='date2'>
+                {% for x in list_date %}
+                {% if x == selected_date.strftime("%d/%m/%Y") %}
+                {% if list_date|length == 5 %}
+                <option value="{{x}}" selected style="background-color:rgb(228, 240, 64);">{{x}}</option>
+                {% else %}
+                <option value="{{x}}" selected style="background-color:rgb(228, 36, 36);">{{x}}</option>
+                {% endif %}
+                {% else %}
+                <option value="{{x}}">{{x}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <br>
+            <br>
+            <label for="date">or selet a date:</label>
+            <input type="date" name="date3" id="date3" value="{{selected_date.strftime('%Y-%m-%d')}}"
+                onchange="this.form.submit()">
+        </form>
+    </div>
+</body>
+<script>
+    var eventSource = new EventSource("/listen_database")
+    eventSource.addEventListener("message", function (e) {
+        console.log(e.data)
+    }, false)
+
+    eventSource.addEventListener("online", function (e) {
+        data = JSON.parse(e.data)
+        var headings = JSON.parse('{{headings|tojson}}')
+        $('#show_table').html("<table class='table' id='my_table'>")
+        header = $("<tr class='table__header'></tr>")
+        for (let cell_value of headings) {
+            cell = $("<th class='table__cell'>" + cell_value + "</th>");
+            header.append(cell)
+        }
+        $('#my_table').append(header)
+        if (data.nodata == 'False') {
+            for (let row_value of data.row) {
+                row = $("<tr class='table__row'></tr>")
+                for (let cell_value of row_value) {
+                    cell = $("<td class='table__cell'>" + cell_value + "</td>");
+                    row.append(cell);
+                }
+                $('#my_table').append(row)
+            }
+        }
+    }, true)
+</script>
+<script>
+    $(document).ready(function () {
+        $('#date2').on('change', function () {
+            var st = $('#date2').val();
+            var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
+            $('#date3').val(st.replace(pattern, '$3-$2-$1'));
+            this.form.submit();
+        });
+    });
+</script>
+
+</html>

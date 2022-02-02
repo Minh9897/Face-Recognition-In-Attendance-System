@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>TRAINING MODEL</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="menu">
+    <ul>
+      <li><a href="/">Video Processing</a></li>
+      <li><a class="active" href="/training">Training Model</a></li>
+      <li><a href="/index">Database</a></li>
+    </ul>
+  </div>
+  <div class="main">
+    <h1>TRAINING MODEL</h1>
+    <div id="recorder">
+      <input id="name" type="text" placeholder="Nhập tên">
+      <button id="record">Record</button>
+      <button id="stop">Stop</button>
+      <p id="download"></p>
+    </div>
+    <img id="video" src="{{ url_for('video_feed') }}">
+    <br>
+    <button id="training">Train</button>
+    <!-- <div id="trainProcess" style='display: none;'></div> -->
+    <div id="trainProcess" style='display: none;'>
+      <img class="imgTrain" src='/static/img/loading.gif' style="vertical-align:middle">
+      <span id="process" style="vertical-align:middle"></span>
+    </div>
+    <div id="trainFinish" style='display: none;' style="vertical-align:middle">
+      <img class="imgTrain" src='/static/img/done.png' style="vertical-align:middle"><span>DONE !!!</span></div>
+  </div>
+  <script type="text/javascript" src="{{ url_for('static', filename='recorder.js') }}"></script>
+</body>
+
+</html>

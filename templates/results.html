@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>App Demo</title>
+  <link rel="stylesheet" href="/static/styles2.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('#face_detect_threshold_id,#small_face_delete_threshold_id,#face_verification_threshold_id').on('input',
+        function () {
+          $.ajax({
+            type: 'POST',
+            url: "{{url_for('res_threshold')}}",
+            data: {
+              'face_detect_threshold': $('#face_detect_threshold_id').val(),
+              'small_face_delete_threshold': $('#small_face_delete_threshold_id').val(),
+              'face_verification_threshold': $('#face_verification_threshold_id').val(),
+            }
+          });
+        });
+      $('#apply').on('click',
+        function () {
+          $.ajax({
+            type: 'POST',
+            url: "{{url_for('save_threshold')}}",
+            success: function (response) {
+              $('#saveMsg').html('Save done!');
+              setTimeout(function () {
+                $('#saveMsg').empty()
+              }, 3000);
+            },
+          });
+        });
+    });
+  </script>
+</head>
+
+<body>
+  <div class="menu">
+    <ul>
+      <li><a class="active" href="/">Video Processing</a></li>
+      <li><a href="/training">Training Model</a></li>
+      <li><a href="/index">Database</a></li>
+    </ul>
+  </div>
+  <div class="main">
+    <h1>Streaming processed video... </h1>
+    <br>
+    <img src="{{url_for('video_feed')}}">
+    <br>
+    <div>
+      <button id='raw'>No Process</button>
+      <button id='detection'> Face Detection</button>
+      <button id='verification'>Face Verification</button>
+    </div>
+    <div class="slidecontainer">
+      <p>Face Detection Threshold:</p>
+      <input type="range" min="1" max="100" value="{{threshold_value['face_detect_threshold']}}" class="slider"
+        id="face_detect_threshold_id" class="slider">
+      <span id="demo1"></span>
+      <p>Small Face Delete Threshold:</p>
+      <input type="range" min="1" max="200" value="{{threshold_value['small_face_delete_threshold']}}" class="slider"
+        id="small_face_delete_threshold_id" class="slider">
+      <span id="demo2"></span>
+      <p>Face Verification Threshold:</p>
+      <input type="range" min="1" max="200" value="{{threshold_value['face_verification_threshold']}}" class="slider"
+        id="face_verification_threshold_id" class="slider">
+      <span id="demo3"></span>
+    </div><br>
+    <button id="apply">Save Threshold</button> <span id="saveMsg"></span>
+  </div>
+  <script>
+    var slider_1 = document.getElementById("face_detect_threshold_id");
+    var output_1 = document.getElementById("demo1");
+    output_1.innerHTML = slider_1.value;
+
+    slider_1.oninput = function () {
+      output_1.innerHTML = this.value;
+    }
+    var slider_2 = document.getElementById("small_face_delete_threshold_id");
+    var output_2 = document.getElementById("demo2");
+    output_2.innerHTML = slider_2.value;
+
+    slider_2.oninput = function () {
+      output_2.innerHTML = this.value;
+    }
+    var slider_3 = document.getElementById("face_verification_threshold_id");
+    var output_3 = document.getElementById("demo3");
+    output_3.innerHTML = slider_3.value;
+
+    slider_3.oninput = function () {
+      output_3.innerHTML = this.value;
+    }
+  </script>
+  <script>
+    $(document).ready(function () {
+      $('#raw').click(function () {
+        $.ajax({
+          url: "/mode_change",
+          type: 'post',
+          data: {
+            mode: 'raw'
+          },
+        })
+      });
+      $('#detection').click(function () {
+        $.ajax({
+          url: "/mode_change",
+          type: 'post',
+          data: {
+            mode: 'detection'
+          },
+        })
+      });
+      $('#verification').click(function () {
+        $.ajax({
+          url: "/mode_change",
+          type: 'post',
+          data: {
+            mode: 'verification'
+          },
+        })
+      });
+    })
+  </script>
+</body>
+
+</html>
